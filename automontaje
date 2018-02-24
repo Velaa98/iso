@@ -1,1 +1,27 @@
+apt-get install autofs
 
+Para configurar necesitamos parar el demonio: systemctl stop autofs
+
+Hay que configurar el fichero /etc/auto.master con el siguiente formato:
+directorio  fichero_configuración opciones
+
+ej:
+/mnt/prueba /etc/auto.prueba  --timeout=2,sync,nodev,nosuid
+
+
+Crear y configurar el fichero /etc/auto.prueba que indicamos en el /etc/auto.master. Tiene el siguiente formato:
+directorio  -fstype=ext4  UUID=La correspondiente a la partición
+
+el directorio que indicamos estará dentro del punto de montaje que indicamos en /etc/auto.master. Es decir que quedaría:
+/mnt/prueba/directorio
+
+Creamos un enlace simbolico:
+
+ln -s /mnt/prueba/directorio nombre_enlace(ej:Vinculo a partición 2)
+
+iniciamos el servicio: systemctl start autofs
+
+cd nombre_enlace
+
+con lsblk comprobamos que se ha montado automáticamente, como hemos puesto --timeout=2 al salir del directorio permanecerá montado
+durante 2 segundos y se desmontará automáticamente. Al entrar se volverá a montar.
